@@ -51,3 +51,9 @@ form{
     font-weight: bold;
     color: whitesmoke;
 }
+
+.change-status-btn{
+    background-color: greenyellow;
+    font-weight: bold;
+    
+}

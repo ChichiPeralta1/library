@@ -12,8 +12,6 @@ new_book_button.addEventListener('click', () => {
 })
 
 
-
-
 submit_btn.addEventListener('click', (e) => {
     
     e.preventDefault()
@@ -24,7 +22,7 @@ submit_btn.addEventListener('click', (e) => {
     formData.title = document.querySelector("#title").value;
     formData.author = document.querySelector("#author").value;
     formData.pages = document.querySelector("#pages").value;
-    formData.read = document.querySelector("#read").value;
+    formData.read = document.querySelector("#read").checked;
 
     addBook(formData.title, formData.author, formData.pages, formData.read)
     mainContainer.innerHTML = ''
@@ -32,31 +30,33 @@ submit_btn.addEventListener('click', (e) => {
     formData = {};
     form.reset()
     
-    console.log(myLibrary)
-
-    
 })
 
-//GETTING DATA FROM THE FORM
+
 
 let formData = {};
 
 
-
-
-
 // CONSTRUCTOR
-    function Book(title, author, pages, read){
+function Book(title, author, pages, read){
 
-        const randomID = crypto.randomUUID();
+    const randomID = crypto.randomUUID();
 
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.read = read;
-        this.id = crypto.randomUUID()
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.read = read;
+    this.id = crypto.randomUUID()
 
-    }
+}
+
+Book.prototype.changeStatus = function(){
+
+    this.read = !this.read
+
+}
+
+
 
 // EMPTY ARRAY TO BEGIN WITH
 
@@ -90,26 +90,31 @@ let displayBook = function(bookArr){
         card.className = 'book-card'
         const removeButton = document.createElement('button');
         removeButton.className = 'remove-button';
+        const changeReadStatusBtn = document.createElement('button');
+        changeReadStatusBtn.className = 'change-status-btn'
         
         
 
         h2.innerText = myLibrary[i].title;
         card.appendChild(h2);
+
         p_author.innerText = 'by '+ myLibrary[i].author;
         card.appendChild(p_author);
+        
         p_pages.innerText = myLibrary[i].pages + ' pages'
         card.appendChild(p_pages)
-        p_read.innerText = 'readed? '+ myLibrary[i].read;
+        
+        p_read.innerText = 'read? '+ myLibrary[i].read;
         card.appendChild(p_read);
+        
         removeButton.innerText = 'Remove book';
-
         removeButton.setAttribute('data-id', myLibrary[i].id);
-        
-       
-        
-       
-    
         card.appendChild(removeButton);
+
+        changeReadStatusBtn.innerText = 'Change read status'
+        changeReadStatusBtn.setAttribute('data-id', myLibrary[i].id);
+        card.appendChild(changeReadStatusBtn)
+
         mainContainer.appendChild(card);
         
     }
@@ -120,9 +125,6 @@ let displayBook = function(bookArr){
 displayBook(myLibrary)
 
 
-//removeButton.addEventListener('click', (e) => {
-//    removeBook(myLibrary, e.target.dataset.id)
-//})
 
 mainContainer.addEventListener('click', (e) => {
     const target = e.target
@@ -132,20 +134,36 @@ mainContainer.addEventListener('click', (e) => {
     }
 })
 
+//CHANGE .read STATUS USING PROTOTYPE FUNCTION
+mainContainer.addEventListener('click', (e) => {
+    const target = e.target;
+    if(target.className == 'change-status-btn'){
+        const bookId = target.dataset.id;
+        const bookToModify = myLibrary.find(book => book.id === bookId)
+
+        console.log(bookToModify)
+        bookToModify.changeStatus()
+
+        mainContainer.innerHTML = ''
+        displayBook(myLibrary)
+       
+
+    }
+
+})
+
+
 
 const removeBook = function(arr, id ){
 
     let filtered = arr.filter(function(element){
 
-        console.log(element)
         return element.id != id
-
     })
 
     myLibrary = filtered;
     mainContainer.innerHTML = ''
-    displayBook(myLibrary)
-    
+    displayBook(myLibrary)  
 }
 
 
